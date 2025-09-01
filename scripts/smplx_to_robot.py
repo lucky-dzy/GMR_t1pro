@@ -10,6 +10,41 @@ from general_motion_retargeting import RobotMotionViewer
 from general_motion_retargeting.utils.smpl import load_smplx_file, get_smplx_data_offline_fast
 
 from rich import print
+import mujoco
+from scipy.spatial.transform import Rotation as R
+
+def output_motion(frames, out_filename, motion_weight, frame_duration):
+  with open(out_filename, "w") as f:
+    f.write("{\n")
+    f.write("\"LoopMode\": \"Wrap\",\n")
+    f.write("\"FrameDuration\": " + str(frame_duration) + ",\n")
+    f.write("\"EnableCycleOffsetPosition\": true,\n")
+    f.write("\"EnableCycleOffsetRotation\": true,\n")
+    f.write("\"MotionWeight\": " + str(motion_weight) + ",\n")
+    f.write("\n")
+
+    f.write("\"Frames\":\n")
+
+    f.write("[")
+    for i in range(frames.shape[0]):
+      curr_frame = frames[i]
+
+      if i != 0:
+        f.write(",")
+      f.write("\n  [")
+
+      for j in range(frames.shape[1]):
+        curr_val = curr_frame[j]
+        if j != 0:
+          f.write(", ")
+        f.write("%.5f" % curr_val)
+
+      f.write("]")
+
+    f.write("\n]")
+    f.write("\n}")
+
+  return
 
 if __name__ == "__main__":
     
@@ -33,7 +68,7 @@ if __name__ == "__main__":
         choices=["unitree_g1", "unitree_g1_with_hands", "unitree_h1", "unitree_h1_2",
                  "booster_t1", "booster_t1_29dof","stanford_toddy", "fourier_n1", 
                 "engineai_pm01", "kuavo_s45", "hightorque_hi", "galaxea_r1pro", "berkeley_humanoid_lite", "booster_k1",
-                "pnd_adam_lite", "openlong"],
+                "pnd_adam_lite", "openlong", "tlibot_t1pro", "tlibot_t1pro_20dof", "tlibot_t1pro_23dof"],
         default="openlong",
     )
     
@@ -108,7 +143,12 @@ if __name__ == "__main__":
     
     # Start the viewer
     i = 0
-
+    toe_pos_list = []
+    pos_vel_list = []
+    root_vel_list = []
+    root_angvel_list = []
+    root_pos_list = []
+    root_ang_list = []
     while True:
         if args.loop:
             i = (i + 1) % len(smplx_data_frames)
@@ -145,6 +185,56 @@ if __name__ == "__main__":
         )
         if args.save_path is not None:
             qpos_list.append(qpos)
+        
+        # save txt
+        mujoco.mj_forward(robot_motion_viewer.model, robot_motion_viewer.data)
+        al_id = mujoco.mj_name2id(robot_motion_viewer.model, mujoco.mjtObj.mjOBJ_BODY, "arm_left_wrist_yaw_link")
+        ar_id = mujoco.mj_name2id(robot_motion_viewer.model, mujoco.mjtObj.mjOBJ_BODY, "arm_right_wrist_yaw_link")
+        ll_id = mujoco.mj_name2id(robot_motion_viewer.model, mujoco.mjtObj.mjOBJ_BODY, "leg_left_ankle_pitch_link")
+        lr_id = mujoco.mj_name2id(robot_motion_viewer.model, mujoco.mjtObj.mjOBJ_BODY, "leg_right_ankle_pitch_link")
+        base_id = mujoco.mj_name2id(robot_motion_viewer.model, mujoco.mjtObj.mjOBJ_BODY, "base_link")
+        pos_base = robot_motion_viewer.data.xpos[base_id].copy()
+        quat_base = robot_motion_viewer.data.xquat[base_id].copy()
+      
+        al_world = robot_motion_viewer.data.xpos[al_id].copy()
+        ar_world = robot_motion_viewer.data.xpos[ar_id].copy()
+        ll_world = robot_motion_viewer.data.xpos[ll_id].copy()
+        lr_world = robot_motion_viewer.data.xpos[lr_id].copy()
+
+        mat = np.zeros(9)
+        mujoco.mju_quat2Mat(mat, quat_base)
+        R_base = mat.reshape(3, 3)
+        al_rel = (al_world - pos_base) @ R_base.T
+        ar_rel = (ar_world - pos_base) @ R_base.T
+        ll_rel = (ll_world - pos_base) @ R_base.T
+        lr_rel = (lr_world - pos_base) @ R_base.T
+        tar_toe_pos_local = np.squeeze(np.concatenate([al_rel, ar_rel, ll_rel, lr_rel], axis=-1))
+        toe_pos_list.append(tar_toe_pos_local)
+        if fps_counter > 1:
+            euler_angles = R.from_quat(qpos[3:7][[1,2,3,0]]).as_euler('xyz')
+            
+            # visualize
+            robot_motion_viewer.step(
+                root_pos=qpos[:3],
+                root_rot=qpos[3:7],
+                dof_pos=qpos[7:],
+                human_motion_data=retarget.scaled_human_data,
+                # human_motion_data=smplx_data,
+                human_pos_offset=np.array([0.0, 0.0, 0.0]),
+                show_human_body_name=False,
+                rate_limit=args.rate_limit,
+            )
+            root_pos_list.append(qpos[:3])
+            root_ang_list.append(euler_angles)
+            root_vel = (qpos[:3] - root_pos_list[-2]) / (1.0 / tgt_fps)
+            root_vel_list.append(root_vel)
+            root_angvel = (euler_angles - root_ang_list[-2]) / (1.0 / tgt_fps)
+            root_angvel_list.append(root_angvel)
+        else:
+            root_pos_list.append(np.zeros(3))
+            root_ang_list.append(np.zeros(3))
+            root_vel_list.append(np.zeros(3))
+            root_angvel_list.append(np.zeros(3))
             
     if args.save_path is not None:
         import pickle
@@ -166,7 +256,41 @@ if __name__ == "__main__":
         with open(args.save_path, "wb") as f:
             pickle.dump(motion_data, f)
         print(f"Saved to {args.save_path}")
+
+        # save txt
+        qvel = np.zeros_like(qpos[7:])
+        pos_vel_list.append(qvel)
+        for i in range(len(qpos_list)-1):
+            fps_time = 1.0 / tgt_fps
+            if i > 0:
+                qvel = (dof_pos[i+1] - dof_pos[i]) / fps_time
+            pos_vel_list.append(qvel)
+        # joint_pose, joint_pose_vel, end_pose
+        new_frames = np.zeros([len(qpos_list), 52])
+        for i in range(len(dof_pos)):
+            curr_pose = np.concatenate([
+                dof_pos[i], pos_vel_list[i], toe_pos_list[i]
+            ])
+            new_frames[i] = curr_pose
             
-      
+        max_value = np.max(new_frames[:, 20:40])
+        print("最大值是:", max_value)
+        mean_value = np.mean(new_frames[:, 20:40])
+        print("平均值是:", mean_value)
+        
+        txt_path = args.save_path.replace('.pkl', '.txt')
+        output_motion(new_frames, txt_path, 0.5, (1.0/tgt_fps))
+        print(f"Saved txt to {txt_path}")
+       
+        new_frames = np.zeros([len(qpos_list), 52])
+        for i in range(len(dof_pos)):
+            curr_pose = np.concatenate([
+                root_pos_list[i], root_ang_list[i],    dof_pos[i], 
+                root_vel_list[i], root_angvel_list[i], pos_vel_list[i]
+            ])
+            new_frames[i] = curr_pose  
+        txt_path = args.save_path.replace('.pkl', '_vis.txt')
+        output_motion(new_frames, txt_path, 0.5, (1.0/tgt_fps))
+        print(f"Saved txt to {txt_path}")  
     
     robot_motion_viewer.close()

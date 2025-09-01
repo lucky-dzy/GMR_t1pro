@@ -20,6 +20,9 @@ ROBOT_XML_DICT = {
     "berkeley_humanoid_lite": ASSET_ROOT / "berkeley_humanoid_lite" / "bhl_scene.xml",
     "booster_k1": ASSET_ROOT / "booster_k1" / "K1_serial.xml",
     "pnd_adam_lite": ASSET_ROOT / "pnd_adam_lite" / "scene.xml",
+    "tlibot_t1pro": ASSET_ROOT / "tlibot_t1pro" / "t1pro.xml",
+    "tlibot_t1pro_20dof": ASSET_ROOT / "tlibot_t1pro" / "t1pro_20dof.xml",
+    "tlibot_t1pro_23dof": ASSET_ROOT / "tlibot_t1pro" / "t1pro_23dof.xml",
 }
 
 IK_CONFIG_DICT = {
@@ -40,6 +43,9 @@ IK_CONFIG_DICT = {
         "berkeley_humanoid_lite": IK_CONFIG_ROOT / "smplx_to_bhl.json",
         "booster_k1": IK_CONFIG_ROOT / "smplx_to_k1.json",
         "pnd_adam_lite": IK_CONFIG_ROOT / "smplx_to_adam.json",
+        "tlibot_t1pro": IK_CONFIG_ROOT / "smplx_to_t1pro.json",
+        "tlibot_t1pro_20dof": IK_CONFIG_ROOT / "smplx_to_t1pro_20dof.json",
+        "tlibot_t1pro_23dof": IK_CONFIG_ROOT / "smplx_to_t1pro_23dof.json",
     },
     "bvh":{
         "unitree_g1": IK_CONFIG_ROOT / "bvh_to_g1.json",
@@ -75,6 +81,9 @@ ROBOT_BASE_DICT = {
     "berkeley_humanoid_lite": "imu_2",
     "booster_k1": "Trunk",
     "pnd_adam_lite": "pelvis",
+    "tlibot_t1pro": "base_link",
+    "tlibot_t1pro_20dof": "base_link",
+    "tlibot_t1pro_23dof": "base_link",
 }
 
 VIEWER_CAM_DISTANCE_DICT = {
@@ -93,4 +102,7 @@ VIEWER_CAM_DISTANCE_DICT = {
     "berkeley_humanoid_lite": 2.0,
     "booster_k1": 2.0,
     "pnd_adam_lite": 3.0,
+    "tlibot_t1pro": 3.0,
+    "tlibot_t1pro_20dof": 3.0,
+    "tlibot_t1pro_23dof": 3.0,
 }
