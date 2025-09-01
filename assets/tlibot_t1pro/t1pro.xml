@@ -155,7 +155,7 @@
               <joint name="arm_left_shoulder_pitch_joint" pos="0 0 0" axis="0 -1 0" range="-1.0472 3" actuatorfrcrange="-96 96" armature="0.1" frictionloss="0.1" damping="1."/>
               <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.6 0.6 0.6 1" mesh="arm_left_shoulder_pitch_link"/>
               <geom type="mesh" rgba="0.6 0.6 0.6 1" mesh="arm_left_shoulder_pitch_link"/>
-              <body name="arm_left_shoulder_roll_link" pos="-0.00320199 0.038 -0.0110717" quat="0.899318 -0.437162 -0.0097096 -0.00471987">
+              <body name="arm_left_shoulder_roll_link" pos="-0.00320199 0.038 -0.0110717" euler="-0.805937979737182 -0.0215924121529237 0">
                 <inertial pos="0.00711462 0.00201934 -0.0342609" quat="0.60404 0.0339638 -0.0256048 0.795818" mass="0.7" diaginertia="0.00238724 0.00232706 0.00066792"/>
                 <joint name="arm_left_shoulder_roll_joint" pos="0 0 0" axis="1 0 0" range="0 3" actuatorfrcrange="-96 96" armature="0.1" frictionloss="0.1" damping="1."/>
                 <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.9 0.9 0.9 1" mesh="arm_left_shoulder_roll_link"/>
@@ -165,7 +165,7 @@
                   <joint name="arm_left_shoulder_yaw_joint" pos="0 0 0" axis="0 0 1" range="-3 3" actuatorfrcrange="-56 56" armature="0.1" frictionloss="0.1" damping="1."/>
                   <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.6 0.6 0.6 1" mesh="arm_left_shoulder_yaw_link"/>
                   <geom type="mesh" rgba="0.6 0.6 0.6 1" mesh="arm_left_shoulder_yaw_link"/>
-                  <body name="arm_left_elbow_link" pos="0 -0.0012 -0.0825">
+                  <body name="arm_left_elbow_link" pos="0 -0.0012 -0.0825" euler="0 1.5707 0">
                     <inertial pos="0.00200142 -0.00259926 0.00025621" quat="-0.00471473 0.707091 0.00471473 0.707091" mass="0.45" diaginertia="0.00041898 0.000417356 0.000160114"/>
                     <joint name="arm_left_elbow_joint" pos="0 0 0" axis="0 -1 0" range="-1.7445 1.048" actuatorfrcrange="-56 56" armature="0.1" frictionloss="0.1" damping="1."/>
                     <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.6 0.6 0.6 1" mesh="arm_left_elbow_link"/>
@@ -199,7 +199,7 @@
               <joint name="arm_right_shoulder_pitch_joint" pos="0 0 0" axis="0 -1 0" range="0 3" actuatorfrcrange="-96 96" armature="0.1" frictionloss="0.1" damping="1."/>
               <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.6 0.6 0.6 1" mesh="arm_right_shoulder_pitch_link"/>
               <geom type="mesh" rgba="0.6 0.6 0.6 1" mesh="arm_right_shoulder_pitch_link"/>
-              <body name="arm_right_shoulder_roll_link" pos="-0.00395181 -0.038 -0.0110879" quat="0.899318 0.437162 -0.0097096 0.00471987">
+              <body name="arm_right_shoulder_roll_link" pos="-0.00395181 -0.038 -0.0110879" euler="0.805937979737182 -0.0215924121529237 0">
                 <inertial pos="0.00785247 -0.00201613 -0.0342572" quat="0.795818 -0.0256048 0.0339638 0.60404" mass="0.7" diaginertia="0.00238724 0.00232706 0.00066792"/>
                 <joint name="arm_right_shoulder_roll_joint" pos="0 0 0" axis="-1 0 0" range="-0.1 3" actuatorfrcrange="-56 56" armature="0.1" frictionloss="0.1" damping="1."/>
                 <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.9 0.9 0.9 1" mesh="arm_right_shoulder_roll_link"/>
@@ -209,7 +209,7 @@
                   <joint name="arm_right_shoulder_yaw_joint" pos="0 0 0" axis="0 0 -1" range="-3 3" actuatorfrcrange="-56 56" armature="0.1" frictionloss="0.1" damping="1."/>
                   <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.6 0.6 0.6 1" mesh="arm_right_shoulder_yaw_link"/>
                   <geom type="mesh" rgba="0.6 0.6 0.6 1" mesh="arm_right_shoulder_yaw_link"/>
-                  <body name="arm_right_elbow_link" pos="0 0.0012 -0.0825">
+                  <body name="arm_right_elbow_link" pos="0 0.0012 -0.0825" euler="0 1.5707 0">
                     <inertial pos="0.00125995 0.00174008 0.00017947" quat="0.00397893 0.707096 -0.00397893 0.707096" mass="0.45" diaginertia="0.00041936 0.000417243 0.000160427"/>
                     <joint name="arm_right_elbow_joint" pos="0 0 0" axis="0 -1 0" range="-1.7445 1.048" actuatorfrcrange="-56 56" armature="0.1" frictionloss="0.1" damping="1."/>
                     <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.6 0.6 0.6 1" mesh="arm_right_elbow_link"/>
